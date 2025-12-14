@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:quiz_app/screens/quiz_screen.dart';
 
 class TopicsScreen extends StatelessWidget {
-  const TopicsScreen({super.key});
+  TopicsScreen({super.key, required this.userName});
+
+  String userName;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +46,7 @@ class TopicsScreen extends StatelessWidget {
                           Icon(Icons.person, size: 32),
                           Expanded(
                             child: Text(
-                              'Mohamed',
+                              userName,
                               style: TextStyle(fontSize: 14),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -61,11 +64,21 @@ class TopicsScreen extends StatelessWidget {
                 // passing parameters using constructor
 
                 // instance 1
-                TopicCard(
-                  title: "Science",
-                  description: "test your science knowledge",
-                  iconPath: "assets/science_icon.svg",
-                  colorHex: 0xFF4CAF50,
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (BuildContext context) => const QuizScreen(),
+                      ),
+                    );
+                  },
+                  child: TopicCard(
+                    title: "Science",
+                    description: "test your science knowledge",
+                    iconPath: "assets/science_icon.svg",
+                    colorHex: 0xFF4CAF50,
+                  ),
                 ),
 
                 // instance 2

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quiz_app/screens/login_screen.dart';
+import 'package:quiz_app/screens/quiz_screen.dart';
+import 'package:quiz_app/screens/score_screen.dart';
 import 'package:quiz_app/screens/splash_screen.dart';
 import 'package:quiz_app/screens/topics_screen.dart';
 
