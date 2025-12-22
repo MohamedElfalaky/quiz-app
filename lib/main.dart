@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:quiz_app/screens/login_screen.dart';
-import 'package:quiz_app/screens/quiz_screen.dart';
-import 'package:quiz_app/screens/score_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:quiz_app/screens/splash_screen.dart';
-import 'package:quiz_app/screens/topics_screen.dart';
 
 void main() {
   runApp(MyApp());
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    // DeviceOrientation.portraitDown,
+  ]);
 }
 
 class MyApp extends StatelessWidget {

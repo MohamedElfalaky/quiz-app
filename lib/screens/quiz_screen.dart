@@ -26,6 +26,10 @@ class _QuizScreenState extends State<QuizScreen> {
   int score = 0;
   @override
   Widget build(BuildContext context) {
+    var orientation = MediaQuery.of(context).orientation;
+    var size = MediaQuery.of(context).size;
+
+    String view = currentView(size.width);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(widget.colorHex),
@@ -67,15 +71,53 @@ class _QuizScreenState extends State<QuizScreen> {
                 ],
               ),
 
-              SizedBox(height: 55),
+              SizedBox(height: orientation == Orientation.landscape ? 12 : 55),
+              Switch.adaptive(value: true, onChanged: (value) {}),
+              IconButton(
+                icon: Icon(Icons.exit_to_app),
+                onPressed: () {
+                  showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog.adaptive(
+                        title: Text('Exit Quiz'),
+                        content: Text(
+                          'Are you sure you want to exit the quiz? Your progress will be lost.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                              Navigator.of(
+                                context,
+                              ).pop(); // Exit the quiz screen
+                            },
+                            child: Text('Exit'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+              SizedBox(height: orientation == Orientation.landscape ? 12 : 55),
 
               Container(
-                padding: EdgeInsets.all(22),
+                padding: EdgeInsets.all(
+                  orientation == Orientation.landscape ? 12 : 22,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     LinearProgressIndicator(
                       value:
@@ -86,7 +128,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.only(top: 34),
+                      padding: EdgeInsets.only(
+                        top: orientation == Orientation.landscape ? 12 : 34,
+                      ),
                       child: Text(
                         widget.questions[currentQuestionIndex]['questionText'],
                         style: TextStyle(fontSize: 24),
@@ -95,41 +139,56 @@ class _QuizScreenState extends State<QuizScreen> {
 
                     SizedBox(height: 25),
 
-                    for (
-                      int i = 0;
-                      i <
-                          (widget.questions[currentQuestionIndex]['answers']
-                                  as List)
-                              .length;
-                      i++
-                    )
-                      InkWell(
-                        onTap: () {
-                          score +=
-                              widget.questions[currentQuestionIndex]['answers'][i]['score']
-                                  as int;
-                          if (currentQuestionIndex <
-                              widget.questions.length - 1) {
-                            setState(() {
-                              currentQuestionIndex++;
-                            });
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) => ScoreScreen(
-                                  score: score,
-                                  totalQuestions: widget.questions.length,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: AnswerCard(
-                          answer: widget
-                              .questions[currentQuestionIndex]['answers'][i],
-                        ),
+                    GridView(
+                      scrollDirection: Axis.vertical,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: view == "mobile" ? 1 : 2,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: view == "mobile" ? 6 : 1,
+                        crossAxisSpacing: 8,
                       ),
+                      shrinkWrap: true,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      children: [
+                        for (
+                          int i = 0;
+                          i <
+                              (widget.questions[currentQuestionIndex]['answers']
+                                      as List)
+                                  .length;
+                          i++
+                        )
+                          InkWell(
+                            onTap: () {
+                              score +=
+                                  widget.questions[currentQuestionIndex]['answers'][i]['score']
+                                      as int;
+                              if (currentQuestionIndex <
+                                  widget.questions.length - 1) {
+                                setState(() {
+                                  currentQuestionIndex++;
+                                });
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder: (BuildContext context) =>
+                                        ScoreScreen(
+                                          score: score,
+                                          totalQuestions:
+                                              widget.questions.length,
+                                        ),
+                                  ),
+                                );
+                              }
+                            },
+                            child: AnswerCard(
+                              answer: widget
+                                  .questions[currentQuestionIndex]['answers'][i],
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -157,5 +216,15 @@ class AnswerCard extends StatelessWidget {
       ),
       child: Text(answer['answerText']),
     );
+  }
+}
+
+String currentView(num maxWidth) {
+  if (maxWidth < 600) {
+    return 'mobile';
+  } else if (maxWidth < 1024) {
+    return 'tablet';
+  } else {
+    return 'desktop';
   }
 }
